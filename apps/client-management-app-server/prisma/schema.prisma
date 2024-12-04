@@ -1,0 +1,57 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Client {
+  address       String?
+  billings      Billing[]
+  birthday      DateTime?
+  createdAt     DateTime       @default(now())
+  email         String?
+  id            String         @id @default(cuid())
+  invoices      Invoice[]
+  name          String?
+  notifications Notification[]
+  phoneNumber   String?
+  updatedAt     DateTime       @updatedAt
+}
+
+model Invoice {
+  amount    Float?
+  billings  Billing[]
+  client    Client?   @relation(fields: [clientId], references: [id])
+  clientId  String?
+  createdAt DateTime  @default(now())
+  dueDate   DateTime?
+  id        String    @id @default(cuid())
+  issueDate DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model Notification {
+  client           Client?   @relation(fields: [clientId], references: [id])
+  clientId         String?
+  createdAt        DateTime  @default(now())
+  id               String    @id @default(cuid())
+  message          String?
+  notificationType String?
+  sentAt           DateTime?
+  updatedAt        DateTime  @updatedAt
+}
+
+model Billing {
+  amountDue   Float?
+  billingDate DateTime?
+  client      Client?   @relation(fields: [clientId], references: [id])
+  clientId    String?
+  createdAt   DateTime  @default(now())
+  id          String    @id @default(cuid())
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id])
+  invoiceId   String?
+  updatedAt   DateTime  @updatedAt
+}
